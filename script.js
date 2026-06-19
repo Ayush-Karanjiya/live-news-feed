@@ -1,101 +1,110 @@
 const API_KEY = "33538faf591156da859e085226f611f8";
 
 const newsContainer = document.getElementById("newsContainer");
-const loading = document.getElementById("loading");
-const error = document.getElementById("error");
+const searchInput = document.getElementById("searchInput");
+const searchBtn = document.getElementById("searchBtn");
 
-async function fetchNews(topic = "world") {
-    loading.textContent = "Loading...";
-    error.textContent = "";
-    newsContainer.innerHTML = "";
+ 
+fetchNews("general");
 
-    try {
-        const url = `https://corsproxy.io/?https://gnews.io/api/v4/top-headlines?country=in&lang=en&topic=${topic}&token=${API_KEY}`;
+ 
+async function fetchNews(topic){
+
+    newsContainer.innerHTML = "<h3>Loading...</h3>";
+
+    const url =
+    `https://corsproxy.io/?https://gnews.io/api/v4/top-headlines?country=in&lang=en&topic=${topic}&token=${API_KEY}`;
+
+    try{
 
         const response = await fetch(url);
-
-        if (!response.ok) {
-            throw new Error("Failed to fetch news");
-        }
-
         const data = await response.json();
-
-        if (!data.articles || data.articles.length === 0) {
-            error.textContent = "No news found";
-            return;
-        }
 
         displayNews(data.articles);
 
-    } catch (err) {
-        console.error(err);
-        error.textContent = "Failed to load news";
-    }
+    }catch(error){
 
-    loading.textContent = "";
+        newsContainer.innerHTML = "<h3>Failed to load news</h3>";
+    }
 }
 
-function displayNews(articles) {
+ 
+function displayNews(articles){
+
     newsContainer.innerHTML = "";
 
+    if(!articles || articles.length === 0){
+        newsContainer.innerHTML = "<h3>No News Found</h3>";
+        return;
+    }
+
     articles.forEach(article => {
+
         const card = document.createElement("div");
         card.className = "news-card";
 
         card.innerHTML = `
-            <img src="${article.image || 'https://via.placeholder.com/300x200'}" alt="News Image">
+            <img src="${article.image || 'https://via.placeholder.com/300'}">
             <h3>${article.title}</h3>
-            <p>${article.description || "No description available."}</p>
+            <p>${article.description || 'No description available'}</p>
             <a href="${article.url}" target="_blank">Read More</a>
         `;
 
         newsContainer.appendChild(card);
     });
 }
+ 
 
-async function searchNews() {
-    const keyword = document.getElementById("searchInput").value.trim();
+async function searchNews(){
 
-    if (!keyword) return;
+    const keyword = searchInput.value.trim();
 
-    loading.textContent = "Loading...";
-    error.textContent = "";
-    newsContainer.innerHTML = "";
+    if(keyword === ""){
+        alert("Enter a topic");
+        return;
+    }
 
-    try {
-        const url = `https://corsproxy.io/?https://gnews.io/api/v4/search?q=${encodeURIComponent(keyword)}&lang=en&token=${API_KEY}`;
+    const url =
+    `https://corsproxy.io/?https://gnews.io/api/v4/search?q=${keyword}&lang=en&token=${API_KEY}`;
+
+    try{
 
         const response = await fetch(url);
-
-        if (!response.ok) {
-            throw new Error("Search failed");
-        }
-
         const data = await response.json();
-
-        if (!data.articles || data.articles.length === 0) {
-            error.textContent = "No results found";
-            return;
-        }
 
         displayNews(data.articles);
 
-    } catch (err) {
-        console.error(err);
-        error.textContent = "Search failed";
+    }catch(error){
+
+        newsContainer.innerHTML = "<h3>Search Failed</h3>";
     }
-
-    loading.textContent = "";
 }
+ 
 
-document.getElementById("searchBtn")
-    .addEventListener("click", searchNews);
+searchBtn.addEventListener("click", searchNews);
 
-document.querySelectorAll(".category")
-    .forEach(button => {
-        button.addEventListener("click", () => {
-            fetchNews(button.dataset.topic);
-        });
+ 
+document.querySelectorAll(".category").forEach(button => {
+
+    button.addEventListener("click", () => {
+
+        fetchNews(button.dataset.topic);
+
     });
 
-fetchNews();
+});
+
+ 
+const darkModeBtn = document.getElementById("darkModeBtn");
+
+darkModeBtn.addEventListener("click", () => {
+
+    document.body.classList.toggle("dark");
+
+    if(document.body.classList.contains("dark")){
+        darkModeBtn.innerText = "☀️ Light Mode";
+    }else{
+        darkModeBtn.innerText = "🌙 Dark Mode";
+    }
+
+});
