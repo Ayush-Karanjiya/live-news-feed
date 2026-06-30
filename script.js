@@ -13,8 +13,7 @@ async function fetchNews(topic){
     newsContainer.innerHTML = "<h3>Loading...</h3>";
 
     const url =
-    `https://corsproxy.io/?https://gnews.io/api/v4/top-headlines?country=in&lang=en&topic=${topic}&token=${API_KEY}`;
-
+`https://api.allorigins.win/raw?url=${encodeURIComponent(`https://gnews.io/api/v4/top-headlines?country=in&lang=en&topic=${topic}&token=${API_KEY}`)}`;
     try{
 
         const response = await fetch(url);
@@ -65,7 +64,7 @@ async function searchNews(){
     }
 
     const url =
-    `https://corsproxy.io/?https://gnews.io/api/v4/search?q=${keyword}&lang=en&token=${API_KEY}`;
+`https://api.allorigins.win/raw?url=${encodeURIComponent(`https://gnews.io/api/v4/search?q=${keyword}&lang=en&token=${API_KEY}`)}`;
 
     try{
 
